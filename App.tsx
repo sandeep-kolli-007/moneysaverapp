@@ -5,14 +5,17 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import RNBootSplash from 'react-native-bootsplash';
 import {
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   useColorScheme,
   View,
 } from 'react-native';
@@ -24,95 +27,97 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import Camera from './src/components/Camera';
+import Routes from './src/routes/Routes';
+import {CreateThemeOptions, ThemeProvider, createTheme} from '@rneui/themed';
+import {Button, Theme} from '@rneui/base';
+import useRazorpayPayment from './src/hooks/useRazorPayment';
+import MlkitOcr from 'react-native-mlkit-ocr';
+import useImagePicker from './src/hooks/useImagePicker';
+import useOcrTextRecognizer from './src/hooks/useOcrTextRecognizer';
+import messaging from '@react-native-firebase/messaging';
+import useFirebaseMessagingPermissions from './src/hooks/useFirebaseMessagingPermissions';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
+  useFirebaseMessagingPermissions();
+  const {makePayment, paymentSuccess, paymentError} = useRazorpayPayment();
+  const {image} = useImagePicker();
+  // const {loading, ocrText} = useOcrTextRecognizer(image?.uri);
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  const theme = createTheme({
+    lightColors: {
+      primary: '#65488A',
+      secondary: '#D8D1E2',
+      white: 'white',
+      background: 'white',
+      grey0: '#707070',
+      grey1: '#bdbdbd',
+      success: '#43E28A',
+      error: '#D24D84',
+    },
+    darkColors: {
+      primary: '#1a181d',
+      secondary: '#232223',
+      white: '#969696',
+      background: '#252525',
+      grey0: '#000',
+      grey1: '#8b8b8b',
+      success: '#43E28A',
+      error: '#121212',
+    },
+    // And set that mode as default
+    mode: isDarkMode ? 'dark' : 'light',
+    components: {
+      Button: {
+        raised: true,
+      },
+    },
+  });
+  // console.log(ocrText, loading);
+  useEffect(() => {
+    // Initialize Firebase
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Background message handled:', remoteMessage);
+    });
+
+    // Handle any message received while the app is in the foreground
+    messaging().onMessage(async remoteMessage => {
+      console.log('Foreground message handled:', remoteMessage);
+    });
+  }, []);
+// Get the FCM registration token
+const getFCMToken = async () => {
+  try {
+    const token = await messaging().getToken();
+    console.log('FCM Token:', token);
+    return token;
+  } catch (error) {
+    console.error('Error getting FCM token:', error);
+    return null;
+  }
+};
+console.log(getFCMToken())
+// Call the function to get the token
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <>
+      <ThemeProvider theme={theme}>
+        <NavigationContainer onReady={() => RNBootSplash.hide()}>
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+          />
+          <SafeAreaView style={{flex: 1}}>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <Routes />
+            </TouchableWithoutFeedback>
+          </SafeAreaView>
+        </NavigationContainer>
+      </ThemeProvider>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
 export default App;

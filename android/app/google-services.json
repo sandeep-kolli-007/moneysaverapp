@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "456152673277",
+    "project_id": "moneysaver-5cc51",
+    "storage_bucket": "moneysaver-5cc51.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:456152673277:android:c6e963e7bc1ad05297c794",
+        "android_client_info": {
+          "package_name": "com.moneysaverapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1XiANcPRZ8_Zgq6Ims49-7hdEzPo769o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
