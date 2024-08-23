@@ -2,7 +2,7 @@ import {View, Text} from 'react-native';
 import React, {useState} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {useTheme} from '@rneui/themed';
-const Dropdown = ({items}: any) => {
+const Dropdown = ({items,onChangeText}: any) => {
   const {theme} = useTheme();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
@@ -13,7 +13,7 @@ const Dropdown = ({items}: any) => {
 
   return (
     <View style={{paddingHorizontal: 10}}>
-      <DropDownPicker
+      <DropDownPicker onSelectItem={onChangeText}
         containerStyle={{
           marginBottom: 20,
 

@@ -24,7 +24,7 @@ const useImagePicker = () => {
 
   const imageLibrary = async () => {
     const options: CameraOptions = {
-      mediaType: 'photo',
+      mediaType: 'photo',includeBase64:true,
     };
 
     await launchImageLibrary(options, response => {

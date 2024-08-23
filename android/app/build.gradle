@@ -118,6 +118,7 @@ dependencies {
 
     // Add the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
+    // implementation 'com.google.firebase:firebase-ml-vision:24.0.3'
     implementation("com.google.firebase:firebase-auth")
     implementation('com.google.firebase:firebase-appcheck-safetynet:16.1.2')
     implementation("com.google.firebase:firebase-appcheck-playintegrity")

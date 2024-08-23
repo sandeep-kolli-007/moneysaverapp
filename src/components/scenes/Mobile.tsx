@@ -18,6 +18,7 @@ import {usePhoneVerification} from '../../hooks/usePhoneVerification';
 import Landing from './Landing';
 import Home from './Home';
 import appCheck from '@react-native-firebase/app-check';
+import {useStore} from '../../hooks/useStore';
 const Mobile = () => {
   const {theme} = useTheme();
   const [phoneNumber, setphoneNumber] = React.useState('');
@@ -32,8 +33,8 @@ const Mobile = () => {
     verifyPhoneNumber,
     confirmCode,
     loading,
-  } = usePhoneVerification();
-  console.log(initializing);
+  }: any = usePhoneVerification();
+  const {state}: any = useStore();
   let rnfbProvider = appCheck().newReactNativeFirebaseAppCheckProvider();
   rnfbProvider.configure({
     android: {
@@ -71,15 +72,16 @@ const Mobile = () => {
   useEffect(() => {
     setIsOTPScreen(false);
   }, [user]);
-  console.log(loading, '69');
+  console.log(loading, user, '69');
+
   return (
     <View style={{flex: 1}}>
-      <KeyboardAvoidingView style={{flex: 1}} behavior={'padding'}>
-        <ScrollView contentContainerStyle={{flexGrow: 1}}>
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            style={{flex: 1}}>
-            {!user ? (
+      {!user ? (
+        <KeyboardAvoidingView style={{flex: 1}} behavior={'padding'}>
+          <ScrollView contentContainerStyle={{flexGrow: 1}}>
+            <TouchableWithoutFeedback
+              onPress={Keyboard.dismiss}
+              style={{flex: 1}}>
               <View
                 style={{
                   justifyContent: 'space-between',
@@ -133,12 +135,14 @@ const Mobile = () => {
                   }}
                 />
               </View>
-            ) : (
-              <Home />
-            )}
-          </TouchableWithoutFeedback>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      ) : state?.phoneNumber ? (
+        <Home />
+      ) : (
+        <></>
+      )}
     </View>
   );
 };

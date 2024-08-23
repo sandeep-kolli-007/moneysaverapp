@@ -10,6 +10,7 @@ import Home from '../components/scenes/Home';
 import Kyc from '../components/scenes/Kyc';
 import GetStarted from '../components/scenes/GetStarted';
 import Notifications from '../components/scenes/Notifications';
+import Investments from '../components/scenes/Investments';
 // import Payment from '../components/Payment';
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,11 @@ const Routes = () => {
       <Stack.Screen
         name="home"
         component={Home}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="investments"
+        component={Investments}
         options={{headerShown: false}}
       />
       <Stack.Screen name="kyc" component={Kyc} options={{headerShown: false}} />

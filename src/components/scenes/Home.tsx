@@ -48,7 +48,8 @@ const Home = () => {
     },
   ];
   useEffect(() => {
-    (typeof authenticateWithBiometrics == 'function' && !isTesting) &&
+    typeof authenticateWithBiometrics == 'function' &&
+      !isTesting &&
       authenticateWithBiometrics();
   }, []);
   return (
@@ -63,28 +64,33 @@ const Home = () => {
               options={{
                 tabBarHideOnKeyboard: true,
                 headerShown: false,
-                tabBarStyle: {backgroundColor: theme.colors.secondary},
+                tabBarStyle: {
+                  backgroundColor: theme.colors.secondary,
+                  // display: 'none',
+                },
                 tabBarIcon: ({focused, color, size}) =>
-                  !item.icon  ? (
-                   !Keyboard.isVisible() && <View
-                      style={{
-                        backgroundColor: theme.colors.secondary, // Example background color for the circular button
-                        width: 70,
-                        elevation: 5,
-                        height: 70,
-                        borderRadius: 35, // Half the width and height to make it circular
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginBottom: 25,
-                      }}>
-                      <Icon
-                        name="rupee-sign"
-                        size={30}
-                        color={
-                          focused ? theme.colors.primary : theme.colors.grey0
-                        }
-                      />
-                    </View>
+                  !item.icon ? (
+                    !Keyboard.isVisible() && (
+                      <View
+                        style={{
+                          backgroundColor: theme.colors.secondary, // Example background color for the circular button
+                          width: 70,
+                          elevation: 5,
+                          height: 70,
+                          borderRadius: 35, // Half the width and height to make it circular
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          marginBottom: 25,
+                        }}>
+                        <Icon
+                          name="rupee-sign"
+                          size={30}
+                          color={
+                            focused ? theme.colors.primary : theme.colors.grey0
+                          }
+                        />
+                      </View>
+                    )
                   ) : (
                     <>
                       <Icon

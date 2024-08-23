@@ -8,13 +8,16 @@ const Input = ({
   style,
   placeholder,
   keyboardType,
+  inputMode,
   onChangeText,
+  onChange,
   maxLength,
   icon,
   value,
   disabled,
   textAlign,
-  inputContainerStyle
+  inputContainerStyle,
+  onFocus,readOnly,onClick
 }: any) => {
   const {theme} = useTheme();
   return (
@@ -53,12 +56,17 @@ const Input = ({
           : undefined
       }
       onChangeText={value => onChangeText && onChangeText(value)}
+      onChange={(e:any)=>onChange && onChange(e?.currentTarget?.value)}
       value={value}
       disabled={disabled}
       disabledInputStyle={{
         backgroundColor: theme.colors.secondary,
         borderRadius: 12,
       }}
+      inputMode={inputMode}
+      onFocus={onFocus}
+      readOnly={readOnly}
+      onPress={onClick}
     />
   );
 };

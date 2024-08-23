@@ -16,9 +16,17 @@ import useImagePicker from '../../hooks/useImagePicker';
 import useOcrTextRecognizer from '../../hooks/useOcrTextRecognizer';
 import FaceDetection from '@react-native-ml-kit/face-detection';
 import Dropdown from '../shared/Dropdown';
+import useFetch from '../../hooks/useFecth';
+import useKycStatus from '../../hooks/useKycStatus';
+import useNoninitialEffect from '../../hooks/useNoninitialEffect';
+import {useNavigation} from '@react-navigation/native';
+import {usePhoneVerification} from '../../hooks/usePhoneVerification';
+import {useStore} from '../../hooks/useStore';
 
 const Kyc = () => {
   //hooks
+  const navigation: any = useNavigation();
+  const {state}: any = useStore();
   const {theme} = useTheme();
   const {image, imageBottomSheet, setIsVisible} = useImagePicker();
   const {
@@ -33,15 +41,97 @@ const Kyc = () => {
     setOcrText,
   } = useOcrTextRecognizer();
   const [ocrAadharExtracted, setOcrAadharExtracted] = useState<any>(null);
-  const [aadharNumber, setAadharNumber] = useState('');
+  // const [aadharNumber, setAadharNumber] = useState('');
+  const [aadharDetails, setAadharDetails] = useState({
+    AadharImage: image?.base64,
+    AadharName: '',
+    AadharNo: '',
+    IsAadharVerified: false,
+    IsSelfieVerified: false,
+    IsBankVerified: false,
+    phone: state.phoneNumber,
+  });
+  const [selfieDetails, setSelfieDetails] = useState({
+    selfieImage: image1?.base64,
+    Email: '',
+    IsAadharVerified: true,
+    IsSelfieVerified: false,
+    IsBankVerified: false,
+    phone: state.phoneNumber,
+  });
+  const [bankDetails, setBankDetails] = useState({
+    AcNumber: '',
+    AcHolderName: '',
+    TypeOfAccount: '',
+    IfscCode: '',
+    IsAadharVerified: true,
+    IsSelfieVerified: true,
+    IsBankVerified: false,
+    phone: state.phoneNumber,
+  });
+
   const [isSelfieValidated, setIsSelfieValidated] = useState(false);
+  console.log('phoneNumber', state.phoneNumber, aadharDetails);
+  const {
+    response,
+    loading,
+    onRefresh: get,
+  } = useFetch({
+    url: `/User/GetKYCDetails?mobile=${state.phoneNumber}`, //try to make constants
+    Options: {method: 'GET', initialRender: true},
+  });
+  // console.log(response, 'kyc', ocrAadharExtracted);
+  const {isKyc, number}: any = useKycStatus(response);
+
+  const {
+    response: r1,
+    loading: l1,
+    onRefresh,
+  } = useFetch({
+    url: '/User/SaveUserKYC', //try to make constants
+    Options: {
+      method: 'POST',
+      initialRender: false,
+      data:
+        number == 0 ? aadharDetails : number == 1 ? selfieDetails : bankDetails,
+    },
+  });
 
   //constants
-  const data = {isAadhar: true, isSelfie: false, isBank: false};
+  const data = {isAadhar: false, isSelfie: false, isBank: false};
   const pattern = /^[0-9]{4} [0-9]{4} [0-9]{4}$/;
-  const step =
-    [data.isAadhar, data.isBank, data.isSelfie].filter(item => item === true)
-      .length + 1;
+  const step = number + 1;
+  const isContinueDisabled = () => {
+    //validations
+    if (number == 0) {
+      //aadhar
+      if (
+        aadharDetails.AadharImage &&
+        aadharDetails.AadharName &&
+        aadharDetails.AadharNo
+      ) {
+        return false;
+      }
+    }
+    if (number == 1) {
+      if (selfieDetails.selfieImage) {
+        return false;
+      }
+    }
+    if (number == 2) {
+      if (
+        bankDetails.AcHolderName &&
+        bankDetails.AcNumber &&
+        bankDetails.IfscCode &&
+        bankDetails.TypeOfAccount
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   //functions
   const Extract = () => {
     setOcrAadharExtracted(ocrText.filter((item: string) => pattern.test(item)));
@@ -60,15 +150,29 @@ const Kyc = () => {
   };
 
   //lifecycle
+  // useEffect(() => {
+  //   setPhoneNumber(user?.phoneNumber.slice(-10));
+  //   setAadharDetails({...aadharDetails, phone: user?.phoneNumber.slice(-10)});
+  //   setSelfieDetails({...selfieDetails, phone: user?.phoneNumber.slice(-10)});
+  //   setBankDetails({...bankDetails, phone: user?.phoneNumber.slice(-10)});
+  // }, [user]);
+
+  useEffect(() => {
+    if (isKyc) {
+      navigation.navigate('mobile');
+    }
+  }, [isKyc]);
   useEffect(() => {
     if (image1) {
       detect();
-      console.log('ddd');
     }
+    setSelfieDetails({...selfieDetails, selfieImage: image1?.base64});
   }, [image1]);
-
+  useNoninitialEffect(() => {
+    if (r1) get();
+  }, [r1]);
   useEffect(() => {
-    console.log(image?.uri, ocrText, aadharOcrLoading);
+    // console.log(image, ocrText, aadharOcrLoading);
     if (!aadharOcrLoading && ocrText) Extract();
   }, [aadharOcrLoading, image?.uri, ocrText]);
 
@@ -77,10 +181,12 @@ const Kyc = () => {
     if (image?.uri) {
       setImageUri(image.uri);
     }
+    setAadharDetails({...aadharDetails, AadharImage: image?.base64});
   }, [image?.uri]);
 
   useEffect(() => {
-    if (ocrAadharExtracted?.length > 0) setAadharNumber(ocrAadharExtracted[0]);
+    if (ocrAadharExtracted?.length > 0)
+      setAadharDetails({...aadharDetails, AadharNo: ocrAadharExtracted[0]});
   }, [ocrAadharExtracted]);
   //   console.log(ocrAadharExtracted);
 
@@ -160,12 +266,16 @@ const Kyc = () => {
                       keyboardType={'numeric'}
                       placeholder="Aadhar Number"
                       label={'Aadhar Number'}
-                      value={aadharNumber}
+                      value={aadharDetails.AadharNo}
                       disabled
                     />
                     <Input
                       placeholder="Name as per Aadhar"
                       label={'Name as per Aadhar'}
+                      value={aadharDetails.AadharName}
+                      onChangeText={(val: string) => {
+                        setAadharDetails({...aadharDetails, AadharName: val});
+                      }}
                     />
                   </View>
                 </>
@@ -218,25 +328,67 @@ const Kyc = () => {
                       placeholder="Email"
                       label={'Email'}
                       icon={'envelope'}
+                      onChangeText={(val: any) => {
+                        setSelfieDetails({...selfieDetails, Email: val});
+                      }}
+                      value={selfieDetails.Email}
                     />
                   </View>
                 </>
               ) : (
                 <View style={{marginTop: 16}}>
-                  <Input placeholder="Account Number" icon={'bank'} />
-                  <Input placeholder="Re-enter Account Number" icon={'bank'} />
-                  <Input placeholder="Name as per Bank" icon={'user'} />
+                  <Input
+                    value={bankDetails.AcNumber}
+                    placeholder="Account Number"
+                    icon={'bank'}
+                    onChangeText={(val: string) => {
+                      setBankDetails({...bankDetails, AcNumber: val});
+                    }}
+                  />
+                  {/* <Input
+                    placeholder="Re-enter Account Number"
+                    icon={'bank'}
+                    onChangeText={(val: string) => {
+                      // setBankDetails({...bankDetails, AcNumber: val}); need to validate
+                    }}
+                  /> */}
+                  <Input
+                    value={bankDetails.AcHolderName}
+                    placeholder="Name as per Bank"
+                    icon={'user'}
+                    onChangeText={(val: string) => {
+                      setBankDetails({...bankDetails, AcHolderName: val});
+                    }}
+                  />
                   <Dropdown
+                    onChangeText={(val: any) => {
+                      console.log(val);
+                      setBankDetails({
+                        ...bankDetails,
+                        TypeOfAccount: val.value,
+                      });
+                    }}
                     items={[
                       {label: 'Savings', value: 'savings'},
                       {label: 'Current', value: 'current'},
                     ]}
                   />
-                  <Input placeholder="IFSC code" />
+                  <Input
+                    value={bankDetails.IfscCode}
+                    placeholder="IFSC code"
+                    onChangeText={(val: string) => {
+                      setBankDetails({...bankDetails, IfscCode: val});
+                    }}
+                  />
                 </View>
               )}
             </View>
-            <Button title={'Continue'}></Button>
+            <Button
+              title={'Continue'}
+              disabled={loading || l1 || isContinueDisabled()}
+              onPress={() => {
+                onRefresh();
+              }}></Button>
           </View>
           {imageBottomSheet}
           {imageBottomSheet1}

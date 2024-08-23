@@ -9,14 +9,33 @@ import {
   TouchableHighlightComponent,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Button from '../shared/Button';
 import {useTheme} from '@rneui/themed';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import Layout from '../shared/Layout';
 import {PieChart} from 'react-native-gifted-charts';
 import Badge from '../shared/Badge';
+import useFetch from '../../hooks/useFecth';
+import useKycStatus from '../../hooks/useKycStatus';
+import {useIsFocused} from '@react-navigation/native';
+import useNoninitialEffect from '../../hooks/useNoninitialEffect';
+import {useStore} from '../../hooks/useStore';
+import IconTab from '../shared/IconTab';
 const Landing = ({navigation}: any) => {
+  const isFocused = useIsFocused();
+  const {state, dispatch}: any = useStore();
+  console.log(state, 'st');
+  const {response, loading, onRefresh} = useFetch({
+    url: `/User/GetKYCDetails?mobile=${state?.phoneNumber}`,
+    Options: {method: 'GET', initialRender: true},
+  });
+
+  const {isKyc, number} = useKycStatus(response);
+
+  useNoninitialEffect(() => {
+    isFocused && onRefresh();
+  }, [isFocused]);
   const {theme} = useTheme();
   const pieData = [
     {
@@ -219,19 +238,49 @@ const Landing = ({navigation}: any) => {
           </View>
         </View>
       </View>
-      {true && kyc(0)}
-      <View>
+      {!isKyc && kyc(number)}
+      <View
+        style={{
+          backgroundColor: theme.colors.secondary,
+          marginTop: 16,
+          padding: 16,
+          borderRadius: 8,
+        }}>
         <Text
           style={{
             fontFamily: 'roboto',
             fontSize: 18,
             fontWeight: 'bold',
-            marginTop: 16,
             color: theme.colors.grey0,
           }}>
-          Recent Savings
+          Quick Access
         </Text>
-        {dummydata.map((item: any, index: number) => (
+
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            marginTop: 16,
+            justifyContent: 'space-between',
+          }}>
+          <IconTab icon={'wallet'} text={'Investments'} onClick={() => {navigation?.navigate('investments');}} />
+          <IconTab
+            icon={'wallet'}
+            text={'Transactions'}
+            onClick={() => {
+              navigation.navigate('Transactions');
+              console.log('transl')
+            }}
+          />
+          <IconTab
+            icon={'wallet'}
+            text={'withdrawl'}
+            onClick={() => {
+              navigation.navigate('Withdraws');
+            }}
+          />
+        </View>
+        {/* {dummydata.map((item: any, index: number) => (
           <TouchableOpacity key={index}>
             <View
               style={{
@@ -281,7 +330,7 @@ const Landing = ({navigation}: any) => {
               </View>
             </View>
           </TouchableOpacity>
-        ))}
+        ))} */}
       </View>
     </Layout>
   );

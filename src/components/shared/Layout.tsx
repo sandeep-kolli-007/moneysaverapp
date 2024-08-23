@@ -15,7 +15,7 @@ const Layout = ({title, bottomsheet, children, noPaddingBottomSheet,isBackEnable
   const {theme} = useTheme();
   const navigation: any = useNavigation();
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <>
       <View style={{flex: 1, backgroundColor: theme.colors.background}}>
         <View
           style={{
@@ -89,7 +89,7 @@ const Layout = ({title, bottomsheet, children, noPaddingBottomSheet,isBackEnable
           </View>
         )}
       </View>
-    </TouchableWithoutFeedback>
+    </>
   );
 };
 

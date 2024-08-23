@@ -37,6 +37,7 @@ import useImagePicker from './src/hooks/useImagePicker';
 import useOcrTextRecognizer from './src/hooks/useOcrTextRecognizer';
 import messaging from '@react-native-firebase/messaging';
 import useFirebaseMessagingPermissions from './src/hooks/useFirebaseMessagingPermissions';
+import { StoreProvider } from './src/hooks/useStore';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -103,7 +104,7 @@ console.log(getFCMToken())
 // Call the function to get the token
 
   return (
-    <>
+    <StoreProvider>
       <ThemeProvider theme={theme}>
         <NavigationContainer onReady={() => RNBootSplash.hide()}>
           <StatusBar
@@ -117,7 +118,7 @@ console.log(getFCMToken())
           </SafeAreaView>
         </NavigationContainer>
       </ThemeProvider>
-    </>
+    </StoreProvider>
   );
 }
 export default App;
