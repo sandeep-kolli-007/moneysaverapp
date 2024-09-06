@@ -22,7 +22,7 @@ const Transactions = () => {
             }}>
             Recent Savings
           </Text>
-          <Input placeholder="Search" icon="search" />
+          {/* <Input placeholder="Search" icon="search" /> */}
           <ScrollView>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((y, i) => (
               <TouchableWithoutFeedback key={i}>
@@ -31,12 +31,13 @@ const Transactions = () => {
                     display: 'flex',
                     backgroundColor: theme.colors.background,
                     padding: 12,
-                    elevation: 5,
+                    elevation: 3,
                     borderRadius: 16,
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     marginBottom: 12,
+                    marginHorizontal:1
                   }}>
                   <View
                     style={{

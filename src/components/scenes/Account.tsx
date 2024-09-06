@@ -4,7 +4,9 @@ import Layout from '../shared/Layout';
 import {useTheme} from '@rneui/themed';
 import Button from '../shared/Button';
 import useLogout from '../../hooks/useLogout';
-import { usePhoneVerification } from '../../hooks/usePhoneVerification';
+import {usePhoneVerification} from '../../hooks/usePhoneVerification';
+import useFetch, {baseUrl} from '../../hooks/useFecth';
+import {useStore} from '../../hooks/useStore';
 
 const Account = () => {
   // const user = {
@@ -17,8 +19,13 @@ const Account = () => {
   // };
   const {theme} = useTheme();
   const logout = useLogout();
- const {user}:any=usePhoneVerification()
- console.log(user)
+  const {state, dispatch}: any = useStore();
+
+  const {user}: any = usePhoneVerification();
+  const {response, loading, onRefresh}: any = useFetch({
+    url: `/User/GetSelfie?mobile=${state?.phoneNumber}`, //try to make constants
+    Options: {method: 'GET', initialRender: true},
+  });
   return (
     <Layout
       title={'Account Details'}
@@ -34,7 +41,10 @@ const Account = () => {
               }}>
               <Image
                 source={{
-                  uri: user?.photoURL ?? 'https://reactnative.dev/img/tiny_logo.png',
+                  uri:
+                    response?.length > 0
+                      ? `${baseUrl}${response[0]?.selfieImage}`
+                      : 'https://reactnative.dev/img/tiny_logo.png',
                 }}
                 width={120}
                 height={120}
@@ -51,7 +61,7 @@ const Account = () => {
                   color: theme.colors.grey0,
                   marginTop: 16,
                 }}>
-                {user?.displayName??'N/A'}
+                {response?.length > 0 ? response[0]?.aadharName : 'N/A'}
               </Text>
               <Text
                 style={{
@@ -62,7 +72,7 @@ const Account = () => {
                   color: theme.colors.grey0,
                   marginTop: 16,
                 }}>
-                {user?.phoneNumber??'N/A'}
+                {user?.phoneNumber ?? 'N/A'}
               </Text>
               <Text
                 style={{
@@ -73,7 +83,7 @@ const Account = () => {
                   color: theme.colors.grey0,
                   marginTop: 8,
                 }}>
-                {user?.email??'N/A'}
+                {response?.length > 0 ? response[0]?.email : 'N/A'}
               </Text>
               {/* <Text
                 style={{

@@ -22,6 +22,7 @@ import {useIsFocused} from '@react-navigation/native';
 import useNoninitialEffect from '../../hooks/useNoninitialEffect';
 import {useStore} from '../../hooks/useStore';
 import IconTab from '../shared/IconTab';
+import Swiper from '../shared/Swiper';
 const Landing = ({navigation}: any) => {
   const isFocused = useIsFocused();
   const {state, dispatch}: any = useStore();
@@ -109,7 +110,7 @@ const Landing = ({navigation}: any) => {
       }}>
       <View
         style={{
-          backgroundColor: theme.colors.background,
+          backgroundColor: "#4047cd",
           elevation: 5,
           borderRadius: 16,
           display: 'flex',
@@ -124,7 +125,7 @@ const Landing = ({navigation}: any) => {
               fontFamily: 'roboto',
               fontSize: 16,
               fontWeight: 'bold',
-              color: theme.colors.grey0,
+              color: "white",
             }}>
             Click here to complete KYC
           </Text>
@@ -133,7 +134,7 @@ const Landing = ({navigation}: any) => {
               fontSize: 12,
               fontFamily: 'roboto',
               fontWeight: 'light',
-              color: theme.colors.grey0,
+              color: "white",
             }}>
             One step ahead of saving.
           </Text>
@@ -142,6 +143,7 @@ const Landing = ({navigation}: any) => {
           donut
           radius={40}
           innerRadius={25}
+          innerCircleColor={'#4047cd'}
           data={[
             {
               value: percentage / 3,
@@ -152,7 +154,7 @@ const Landing = ({navigation}: any) => {
           ]}
           centerLabelComponent={() => {
             return (
-              <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+              <Text style={{fontSize: 20, fontWeight: 'bold',color:"white"}}>
                 {percentage}/3
               </Text>
             );
@@ -165,7 +167,7 @@ const Landing = ({navigation}: any) => {
     <Layout title={'Dashboard'}>
       <View
         style={{
-          backgroundColor: theme.colors.background,
+          backgroundColor: "#23ffe1",
           width: '100%',
           borderRadius: 20,
           padding: 20,
@@ -202,7 +204,7 @@ const Landing = ({navigation}: any) => {
             {renderDot(theme.colors.primary)}
             <Text
               style={{
-                color: theme.colors.grey0,
+                color: "black",
                 fontSize: 16,
                 fontWeight: 'medium',
               }}>
@@ -210,7 +212,7 @@ const Landing = ({navigation}: any) => {
             </Text>
             <Text
               style={{
-                color: theme.colors.grey0,
+                color: "black",
                 fontSize: 18,
                 fontWeight: 'bold',
               }}>
@@ -221,7 +223,7 @@ const Landing = ({navigation}: any) => {
             {renderDot(theme.colors.success)}
             <Text
               style={{
-                color: theme.colors.grey0,
+                color: "black",
                 fontSize: 16,
                 fontWeight: 'medium',
               }}>
@@ -229,7 +231,7 @@ const Landing = ({navigation}: any) => {
             </Text>
             <Text
               style={{
-                color: theme.colors.grey0,
+                color: "black",
                 fontSize: 18,
                 fontWeight: 'bold',
               }}>
@@ -238,10 +240,29 @@ const Landing = ({navigation}: any) => {
           </View>
         </View>
       </View>
+      <Swiper data={[
+        {
+          title: 'Invest in Shine',
+          image: require('../../assets/image1.jpeg'),
+        },
+        {
+          title: 'Care for Tomorrow',
+          image: require('../../assets/image2.jpeg'),
+        },
+        {
+          title: 'Build Your Haven',
+          image: require('../../assets/image4.jpeg'),
+        },
+        {
+          title:
+            'Save for Forever',
+          image: require('../../assets/image5.jpeg'),
+        },
+      ]}/>
       {!isKyc && kyc(number)}
       <View
         style={{
-          backgroundColor: theme.colors.secondary,
+          backgroundColor: "#23ffe1",
           marginTop: 16,
           padding: 16,
           borderRadius: 8,
@@ -263,9 +284,9 @@ const Landing = ({navigation}: any) => {
             marginTop: 16,
             justifyContent: 'space-between',
           }}>
-          <IconTab icon={'wallet'} text={'Investments'} onClick={() => {navigation?.navigate('investments');}} />
+          <IconTab icon={'hand-holding-usd'} text={'Investments'} onClick={() => {navigation?.navigate('investments');}} />
           <IconTab
-            icon={'wallet'}
+            icon={'exchange-alt'}
             text={'Transactions'}
             onClick={() => {
               navigation.navigate('Transactions');
@@ -273,7 +294,7 @@ const Landing = ({navigation}: any) => {
             }}
           />
           <IconTab
-            icon={'wallet'}
+            icon={'coins'}
             text={'withdrawl'}
             onClick={() => {
               navigation.navigate('Withdraws');

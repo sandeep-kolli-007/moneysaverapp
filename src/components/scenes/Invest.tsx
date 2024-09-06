@@ -16,9 +16,14 @@ import useFetch from '../../hooks/useFecth';
 import {useStore} from '../../hooks/useStore';
 import moment from 'moment';
 import CustomDateTimePicker from '../shared/CustomDateTimePicker';
+import Spinner from 'react-native-loading-spinner-overlay';
+import useRazorpayPayment from '../../hooks/useRazorPayment';
+
 const Invest = ({navigation}: any) => {
+  const secretKey = 'KcbjpVlXQLHtBsjafyzlNQOU';
   const {theme} = useTheme();
   const {state, dispatch}: any = useStore();
+  const {makePayment, paymentSuccess, paymentError} = useRazorpayPayment();
 
   const {response, loading, onRefresh}: any = useFetch({
     url: `/User/GetROI`, //try to make constants
@@ -48,12 +53,12 @@ const Invest = ({navigation}: any) => {
   // const [maturityDate, setMaturityDate] = React.useState('');
   const maxYears = 5;
   const date = '2024-06-15';
-
-  const payload = {
+  console.log(state, 'states');
+  const prePayload = {
     amount:
       selectedTab === 0 ? recurringData.investAmount : oneTimeData.investAmount,
-    roiDaily: state.roiPerDay.toString(),
-    roiYearly: state.roiPerYear.toString(),
+    roiDaily: String(state?.roiPerDay),
+    roiYearly: String(state?.roiPerYear),
     yearlyTenure: oneTimeData.noOfYears.toString(),
     dailyTenure: recurringData.noOfDays.toString(),
     startDate: recurringData.maturityDate,
@@ -76,10 +81,13 @@ const Invest = ({navigation}: any) => {
       ),
     isActive: true,
     phone: state.phoneNumber,
-    transactionId: 'sampletrans1234',
+    order_Id: '',
+    payment_Id: '',
+    signature: '',
     policyNumber: '',
     recurring: selectedTab === 0,
   };
+  const [payload, setPayload] = useState(prePayload);
   const {
     response: postResponse,
     loading: l1,
@@ -92,9 +100,45 @@ const Invest = ({navigation}: any) => {
       data: payload,
     },
   });
-  console.log(payload, 'payload');
-  console.log(oneTimeData, 'onet');
-  console.log(postResponse, 'postResponse');
+  const {
+    response: orderResponse,
+    loading: l0,
+    onRefresh: createOrder,
+  }: any = useFetch({
+    url: '/User/CreateRazorpayOrder', //try to make constants
+    Options: {
+      method: 'POST',
+      initialRender: false,
+      data: {
+        amount:
+          selectedTab === 0
+            ? recurringData.investAmount * 100
+            : oneTimeData.investAmount * 100,
+        currency: 'INR',
+        receipt: 'string',
+        notes: {
+          additionalProp1: 'string',
+        },
+      },
+    },
+  });
+  const {
+    response: verifysignatureresponse,
+    loading: l2,
+    onRefresh: verifysignature,
+  }: any = useFetch({
+    url: '/User/VerifyPaymentSignature', //try to make constants
+    Options: {
+      method: 'POST',
+      initialRender: false,
+      data: {
+        orderId: payload.order_Id,
+        paymentId: payload.payment_Id,
+        signature: payload.signature,
+      },
+    },
+  });
+
   useEffect(() => {
     if (response) {
       console.log(response, 'demm');
@@ -107,6 +151,11 @@ const Invest = ({navigation}: any) => {
         type: 'update',
         payload: response?.filter((i: any) => i.plan === '1 day')[0].roi,
         key: 'roiPerDay',
+      });
+      setPayload({
+        ...payload,
+        roiDaily: response?.filter((i: any) => i.plan === '1 day')[0].roi,
+        roiYearly: response?.filter((i: any) => i.plan === '1 year')[0].roi,
       });
     }
   }, [response]);
@@ -128,6 +177,44 @@ const Invest = ({navigation}: any) => {
       }
     }
   }, [postResponse]);
+
+  useEffect(() => {
+    if (paymentSuccess) {
+      console.log(paymentSuccess, 'sucess');
+
+      // payload.signature = paymentSuccess.razorpay_signature;
+      setPayload({
+        ...payload,
+        payment_Id: paymentSuccess.razorpay_payment_id,
+        order_Id: paymentSuccess.razorpay_order_id,
+        signature: paymentSuccess.razorpay_signature,
+      });
+    }
+  }, [paymentSuccess, paymentError]);
+
+  useEffect(() => {
+    if (payload.order_Id && payload.signature && payload.payment_Id) {
+      verifysignature();
+    }
+  }, [payload]);
+
+  useEffect(() => {
+    if (verifysignatureresponse?.success) {
+      post();
+    }
+  }, [verifysignatureresponse]);
+
+  useEffect(() => {
+    if (orderResponse && orderResponse.id) {
+      makePayment(
+        selectedTab === 0
+          ? recurringData.investAmount
+          : oneTimeData.investAmount,
+
+        orderResponse.id,
+      );
+    }
+  }, [orderResponse]);
 
   console.log(currencyConverter(oneTimeData.investAmount));
 
@@ -227,6 +314,10 @@ const Invest = ({navigation}: any) => {
       noPaddingBottomSheet
       bottomsheet={
         <>
+          <Spinner
+            visible={loading || l1 || l2 || l0}
+            textContent={'Loading...'}
+          />
           <ScrollView style={{flex: 1, padding: 32}}>
             <KeyboardAvoidingView
               behavior={'height'}
@@ -292,7 +383,7 @@ const Invest = ({navigation}: any) => {
                   <Button
                     title="Invest"
                     onPress={() => {
-                      post();
+                      createOrder();
                     }}
                   />
                   {oneTimeData.noOfYears && oneTimeData.investAmount && (
@@ -345,7 +436,8 @@ const Invest = ({navigation}: any) => {
                   <Button
                     title="Invest"
                     onPress={() => {
-                      post();
+                      // makePayment(Number(recurringData.investAmount));
+                      createOrder();
                     }}
                   />
                 </View>

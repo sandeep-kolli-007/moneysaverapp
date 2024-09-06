@@ -7,37 +7,27 @@ import {View, Text, ScrollView, TouchableWithoutFeedback} from 'react-native';
 import useFetch from '../../hooks/useFecth';
 import {useStore} from '../../hooks/useStore';
 import useUtilities from '../../hooks/useUtilities';
-
+import Spinner from 'react-native-loading-spinner-overlay';
 function Investments() {
   const {theme} = useTheme();
   const {state, dispatch}: any = useStore();
   const {currencyConverter, RemoveCurrencyConverter, getAfterYear} =
     useUtilities();
   const {response, loading, onRefresh}: any = useFetch({
-    url: `/User/GetInvestments?mobile=9999999999`, //try to make constantsUser/GetInvestments?mobile=9999999999
+    url: `/User/GetInvestments?mobile=${state.phoneNumber}`, //try to make constantsUser/GetInvestments?mobile=9999999999
     Options: {method: 'GET', initialRender: true},
   });
-  console.log(response && response[0]);
-  const item = {
-    amount: 1000,
-    dailyTenure: '2',
-    isActive: true,
-    maturityDate: '2024-09-20T05:16:09.127',
-    maturityValue: 1200,
-    phone: '8985792422',
-    policyNumber: 'INR000001',
-    recurring: false,
-    roiDaily: '2',
-    roiYearly: '',
-    startDate: '2024-08-20T05:16:09.127',
-    transactionId: '123456214',
-    yearlyTenure: '0',
-  };
+  console.log(response && response[0],"res",loading);
+ 
   return (
     <Layout
       title={'Investments'}
       bottomsheet={
         <>
+        <Spinner
+          visible={loading}
+          textContent={'Loading...'}
+        />
           <Text
             style={{
               fontFamily: 'roboto',
@@ -57,12 +47,13 @@ function Investments() {
                     display: 'flex',
                     backgroundColor: theme.colors.background,
                     padding: 12,
-                    elevation: 5,
+                    elevation: 3,
                     borderRadius: 16,
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     marginBottom: 12,
+                    marginHorizontal:1
                   }}>
                   <View
                     style={{

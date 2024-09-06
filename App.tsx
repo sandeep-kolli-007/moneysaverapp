@@ -8,6 +8,7 @@
 import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import RNBootSplash from 'react-native-bootsplash';
+ 
 import {
   Keyboard,
   SafeAreaView,
@@ -60,14 +61,14 @@ function App(): React.JSX.Element {
       error: '#D24D84',
     },
     darkColors: {
-      primary: '#1a181d',
-      secondary: '#232223',
-      white: '#969696',
-      background: '#252525',
-      grey0: '#000',
-      grey1: '#8b8b8b',
+      primary: '#65488A',
+      secondary: '#D8D1E2',
+      white: 'white',
+      background: 'white',
+      grey0: '#707070',
+      grey1: '#bdbdbd',
       success: '#43E28A',
-      error: '#121212',
+      error: '#D24D84',
     },
     // And set that mode as default
     mode: isDarkMode ? 'dark' : 'light',

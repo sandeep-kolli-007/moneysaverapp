@@ -65,7 +65,7 @@ const Home = () => {
                 tabBarHideOnKeyboard: true,
                 headerShown: false,
                 tabBarStyle: {
-                  backgroundColor: theme.colors.secondary,
+                  backgroundColor: "#4047cd",
                   // display: 'none',
                 },
                 tabBarIcon: ({focused, color, size}) =>
@@ -73,7 +73,7 @@ const Home = () => {
                     !Keyboard.isVisible() && (
                       <View
                         style={{
-                          backgroundColor: theme.colors.secondary, // Example background color for the circular button
+                          backgroundColor: "#4047cd", // Example background color for the circular button
                           width: 70,
                           elevation: 5,
                           height: 70,
@@ -86,7 +86,7 @@ const Home = () => {
                           name="rupee-sign"
                           size={30}
                           color={
-                            focused ? theme.colors.primary : theme.colors.grey0
+                            focused ? "white" : "lightgrey"
                           }
                         />
                       </View>
@@ -97,12 +97,12 @@ const Home = () => {
                         name={focused ? item.icon : item.icon}
                         size={18}
                         color={
-                          focused ? theme.colors.primary : theme.colors.grey0
+                          focused ? "white" : "lightgrey"
                         }
                       />
                     </>
                   ),
-                tabBarActiveTintColor: theme.colors.primary,
+                tabBarActiveTintColor: "white",
                 tabBarLabel: item.name === 'Invest' ? '' : item.name,
               }}
             />
