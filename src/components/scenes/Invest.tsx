@@ -18,6 +18,7 @@ import moment from 'moment';
 import CustomDateTimePicker from '../shared/CustomDateTimePicker';
 import Spinner from 'react-native-loading-spinner-overlay';
 import useRazorpayPayment from '../../hooks/useRazorPayment';
+import Swiper from '../shared/Swiper';
 
 const Invest = ({navigation}: any) => {
   const secretKey = 'KcbjpVlXQLHtBsjafyzlNQOU';
@@ -246,6 +247,7 @@ const Invest = ({navigation}: any) => {
             fontSize: 16,
             textAlign: 'center',
             fontFamily: 'roboto',
+            marginTop: 16,
             fontWeight: 'medium',
             color: theme.colors.grey0,
           }}>
@@ -281,6 +283,7 @@ const Invest = ({navigation}: any) => {
             fontSize: 16,
             textAlign: 'center',
             fontFamily: 'roboto',
+            marginTop: 16,
             fontWeight: 'medium',
             color: theme.colors.grey0,
           }}>
@@ -334,6 +337,26 @@ const Invest = ({navigation}: any) => {
                   setSelectedTab(i);
                   setOneTimeData(onetime);
                 }}
+              />
+              <Swiper
+                data={[
+                  {
+                    title:
+                      'Get personalized advice on the best savings strategies for your education goals.',
+                  },
+                  {
+                    title:
+                      'Reduce unnecessary spending and allocate that money towards your dream house savings.',
+                  },
+                  {
+                    title:
+                      'Determine how much gold you want to buy Save money accordingly',
+                  },
+                  {
+                    title:
+                      "Love doesn't cost a thing, but a wedding does. Start saving now.",
+                  },
+                ]}
               />
               {selectedTab === 1 ? (
                 <View>

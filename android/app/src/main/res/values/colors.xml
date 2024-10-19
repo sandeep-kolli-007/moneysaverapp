@@ -1,4 +1,5 @@
 <resources>
     <color name="bootsplash_background">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="ripple_color">#65488A</color>
 </resources>

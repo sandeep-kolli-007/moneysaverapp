@@ -240,7 +240,7 @@ const Landing = ({navigation}: any) => {
           </View>
         </View>
       </View>
-      <Swiper data={[
+      <Swiper showPagination={true} data={[
         {
           title: 'Invest in Shine',
           image: require('../../assets/image1.jpeg'),
