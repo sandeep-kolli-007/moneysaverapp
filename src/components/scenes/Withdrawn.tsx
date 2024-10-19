@@ -11,14 +11,30 @@ import {useTheme} from '@rneui/themed';
 import Input from '../shared/Input';
 import Badge from '../shared/Badge';
 import Button from '../shared/Button';
-
+import {useStore} from '../../hooks/useStore';
+import useFetch from '../../hooks/useFecth';
+import Spinner from 'react-native-loading-spinner-overlay';
+import useUtilities from '../../hooks/useUtilities';
+const {
+  currencyConverter,
+  RemoveCurrencyConverter,
+  getAfterMonth,
+  getAfterYear,
+} = useUtilities();
 const Withdrawn = () => {
   const {theme} = useTheme();
+  const {state, dispatch}: any = useStore();
+  const {response, loading, onRefresh}: any = useFetch({
+    url: `/User/GetWithDraws?mobile=${state.phoneNumber}`, //try to make constantsUser/GetInvestments?mobile=9999999999
+    Options: {method: 'GET', initialRender: true},
+  });
+  console.log(response, 'GetWithDraws');
   return (
     <Layout
       title="Withdrawn"
       bottomsheet={
         <>
+          <Spinner visible={loading} textContent={'Loading...'} />
           <Text
             style={{
               fontFamily: 'roboto',
@@ -31,94 +47,120 @@ const Withdrawn = () => {
           </Text>
           {/* <Input placeholder="Search" icon="search" /> */}
           <ScrollView>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((y, i) => (
-              <TouchableOpacity key={i}>
-                <View
-                  style={{
-                    display: 'flex',
-                    backgroundColor: theme.colors.background,
-                    padding: 12,
-                    elevation: 3,
-                    borderRadius: 16,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 12,
-                    marginHorizontal:1
-                  }}>
+            {response?.length > 0 &&
+              response.map((item: any, i: any) => (
+                <TouchableOpacity key={i}>
                   <View
                     style={{
-                      width: '100%',
                       display: 'flex',
+                      backgroundColor: theme.colors.background,
+                      padding: 12,
+                      elevation: 3,
+                      borderRadius: 16,
                       flexDirection: 'row',
                       justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: 12,
+                      marginHorizontal: 1,
                     }}>
-                    <View>
-                      <View
-                        style={{
-                          margin: 0,
-                          padding: 0,
-                          display: 'flex',
-                          flexDirection: 'row',
-                          gap: 4,
-                        }}>
-                        <Badge text={'23rd April'} />
-                        {/* <Badge text={'Matured'} color={'success'} /> */}
-                        <Badge text={'Not matured'} color={'error'} />
-                      </View>
-                      <Text
-                        style={{
-                          color: theme.colors.grey0,
-                          fontSize: 18,
-                          fontFamily: 'roboto',
-                          marginTop: 4,
-                          fontWeight: 'bold',
-                        }}>
-                        ₹1,50,000
-                      </Text>
-                      <Text
-                        style={{
-                          color: theme.colors.grey0,
-                          fontSize: 14,
-                          fontFamily: 'roboto',
-                        }}>
-                        ₹1,00,000
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            fontFamily: 'roboto',
-                            color: theme.colors.success,
-                            fontWeight: 'bold',
-                          }}>
-                          (+5,000)
-                        </Text>
-                      </Text>
-                    </View>
                     <View
                       style={{
-                        alignItems: 'stretch',
+                        width: '100%',
                         display: 'flex',
-                        flexDirection: 'column',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
                       }}>
-                      <Text
+                      <View
                         style={{
-                          fontSize: 18,
-                          fontWeight: 'bold',
-                          color: theme.colors.grey0,
+                          alignItems: 'stretch',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-evenly',
                         }}>
-                        IN000001
-                      </Text>
-                      <Button
+                        <View
+                          style={{
+                            margin: 0,
+                            padding: 0,
+                            display: 'flex',
+                            flexDirection: 'row',
+                            gap: 4,
+                          }}>
+                          <Badge
+                            text={new Date(
+                              item.maturityDate.split('T')[0],
+                            ).toLocaleDateString('en-US', {
+                              month: 'short', // Abbreviated month (e.g., "Aug")
+                              day: 'numeric', // Numeric day of the month (e.g., "22")
+                              year: 'numeric',
+                            })}
+                          />
+                          {/* <Badge text={'Matured'} color={'success'} /> */}
+                          <Badge
+                            text={
+                              new Date() > new Date(item.maturityDate)
+                                ? 'matured'
+                                : 'Not matured'
+                            }
+                            color={
+                              new Date() > new Date(item.maturityDate)
+                                ? 'success'
+                                : 'error'
+                            }
+                          />
+                        </View>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            textAlign: 'left',
+                            color: theme.colors.grey0,
+                          }}>
+                          {item.policyNumber}
+                        </Text>
+                        {/* <Button
                         small
                         title="Withdraw"
                         style={{marginTop: 4}}
                         disabled
-                      />
+                      /> */}
+                      </View>
+                      <View>
+                        <Text
+                          style={{
+                            color: theme.colors.grey0,
+                            fontSize: 22,
+                            fontFamily: 'roboto',
+                            marginTop: 4,
+                            fontWeight: 'bold',
+                          }}>
+                          ₹{currencyConverter(item.maturityValue)}
+                        </Text>
+                        <Text
+                          style={{
+                            color: theme.colors.grey0,
+                            fontSize: 14,
+                            fontFamily: 'roboto',
+                          }}>
+                          ₹{currencyConverter(item.amount)}
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              fontFamily: 'roboto',
+                              color: theme.colors.success,
+                              fontWeight: 'bold',
+                            }}>
+                            (+
+                            {currencyConverter(
+                              item.maturityValue - item.amount,
+                            )}
+                            )
+                          </Text>
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              ))}
           </ScrollView>
         </>
       }

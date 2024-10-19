@@ -23,6 +23,7 @@ import useNoninitialEffect from '../../hooks/useNoninitialEffect';
 import {useStore} from '../../hooks/useStore';
 import IconTab from '../shared/IconTab';
 import Swiper from '../shared/Swiper';
+import useUtilities from '../../hooks/useUtilities';
 const Landing = ({navigation}: any) => {
   const isFocused = useIsFocused();
   const {state, dispatch}: any = useStore();
@@ -31,7 +32,16 @@ const Landing = ({navigation}: any) => {
     url: `/User/GetKYCDetails?mobile=${state?.phoneNumber}`,
     Options: {method: 'GET', initialRender: true},
   });
-
+  const {response:r1, loading:l1, onRefresh:on}:any = useFetch({
+    url: `/User/GetDashboard?mobile=${state?.phoneNumber}`,
+    Options: {method: 'GET', initialRender: true},
+  });
+  const {
+    currencyConverter,
+    RemoveCurrencyConverter,
+    getAfterMonth,
+    getAfterYear,
+  } = useUtilities();
   const {isKyc, number} = useKycStatus(response);
 
   useNoninitialEffect(() => {
@@ -40,12 +50,12 @@ const Landing = ({navigation}: any) => {
   const {theme} = useTheme();
   const pieData = [
     {
-      value: 94,
+      value: 100 - r1?.percentage,
       color: theme.colors.primary,
       gradientCenterColor: theme.colors.primary,
     },
     {
-      value: 6,
+      value: r1?.percentage,
       color: theme.colors.success,
       focused: true,
       gradientCenterColor: theme.colors.success,
@@ -165,7 +175,7 @@ const Landing = ({navigation}: any) => {
   );
   return (
     <Layout title={'Dashboard'}>
-      <View
+      {r1 && <View
         style={{
           backgroundColor: "#23ffe1",
           width: '100%',
@@ -188,7 +198,7 @@ const Landing = ({navigation}: any) => {
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <Text
                   style={{fontSize: 22, color: 'white', fontWeight: 'bold'}}>
-                  5%
+                  {r1.percentage}%
                 </Text>
                 <Text style={{fontSize: 14, color: 'white'}}>Excellent</Text>
               </View>
@@ -205,7 +215,7 @@ const Landing = ({navigation}: any) => {
             <Text
               style={{
                 color: "black",
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: 'medium',
               }}>
               Invested
@@ -213,10 +223,10 @@ const Landing = ({navigation}: any) => {
             <Text
               style={{
                 color: "black",
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: 'bold',
               }}>
-              ₹1,00,000
+              ₹{currencyConverter(r1?.amount)}
             </Text>
           </View>
           <View style={{paddingHorizontal: 16}}>
@@ -224,22 +234,22 @@ const Landing = ({navigation}: any) => {
             <Text
               style={{
                 color: "black",
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: 'medium',
               }}>
-              Interest
+              Total returns
             </Text>
             <Text
               style={{
                 color: "black",
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: 'bold',
               }}>
-              ₹5,000
+              ₹{currencyConverter(r1?.maturityValue)}(+{currencyConverter(r1?.interestAmount)})
             </Text>
           </View>
         </View>
-      </View>
+      </View>}
       <Swiper showPagination={true} data={[
         {
           title: 'Invest in Shine',
