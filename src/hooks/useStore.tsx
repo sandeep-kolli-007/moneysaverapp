@@ -12,7 +12,9 @@ import auth from '@react-native-firebase/auth';
 const initialState = {
   phoneNumber: '',
   roiPerYear:0,
-  roiPerDay:0
+  roiPerDay:0,
+  rPayKey:'',
+  rPayPassword:''
 };
 
 // Define reducer

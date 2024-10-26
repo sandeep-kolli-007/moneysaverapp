@@ -21,7 +21,6 @@ import useRazorpayPayment from '../../hooks/useRazorPayment';
 import Swiper from '../shared/Swiper';
 
 const Invest = ({navigation}: any) => {
-  const secretKey = 'KcbjpVlXQLHtBsjafyzlNQOU';
   const {theme} = useTheme();
   const {state, dispatch}: any = useStore();
   const {makePayment, paymentSuccess, paymentError} = useRazorpayPayment();
@@ -49,7 +48,7 @@ const Invest = ({navigation}: any) => {
   };
   const [oneTimeData, setOneTimeData] = React.useState(onetime);
   const [recurringData, setRecurringData] = React.useState(recurring);
-  const [selectedTab, setSelectedTab] = React.useState(0);
+  const [selectedTab, setSelectedTab] = React.useState(1);
 
   // const [maturityDate, setMaturityDate] = React.useState('');
   const maxYears = 5;
@@ -152,6 +151,16 @@ const Invest = ({navigation}: any) => {
         type: 'update',
         payload: response?.filter((i: any) => i.plan === '1 day')[0].roi,
         key: 'roiPerDay',
+      });
+      dispatch({
+        type: 'update',
+        payload: response?.filter((i: any) => i?.rPayKey !== null)[0]?.rPayKey,
+        key: 'rPayKey',
+      });
+      dispatch({
+        type: 'update',
+        payload: response?.filter((i: any) => i?.rPayPassword !== null)[0]?.rPayPassword,
+        key: 'rPayPassword',
       });
       setPayload({
         ...payload,
@@ -321,12 +330,12 @@ const Invest = ({navigation}: any) => {
             visible={loading || l1 || l2 || l0}
             textContent={'Loading...'}
           />
-          <ScrollView style={{flex: 1, padding: 32}}>
+          <ScrollView style={{flex: 1}}>
             <KeyboardAvoidingView
               behavior={'height'}
               keyboardVerticalOffset={-800}
-              style={{flex: 1}}>
-              <SegmentedControlTab
+              style={{flex: 1, padding: 32}}>
+              {false && <SegmentedControlTab
                 activeTabStyle={{backgroundColor: theme.colors.primary}}
                 tabTextStyle={{color: theme.colors.primary}}
                 tabStyle={{borderColor: theme.colors.primary}}
@@ -337,7 +346,7 @@ const Invest = ({navigation}: any) => {
                   setSelectedTab(i);
                   setOneTimeData(onetime);
                 }}
-              />
+              />}
               <Swiper
                 data={[
                   {

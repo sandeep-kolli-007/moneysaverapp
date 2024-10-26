@@ -1,10 +1,11 @@
 import {useState} from 'react';
 import RazorpayCheckout from 'react-native-razorpay';
+import { useStore } from './useStore';
 
 const useRazorpayPayment = () => {
   const [paymentError, setPaymentError] = useState<any>(null);
   const [paymentSuccess, setPaymentSuccess] = useState<any>(null);
-  const key = 'rzp_test_Oab7yc2dBS3Mbl';
+  const {state}:any= useStore()
   const description = 'SOme text for payment reason we collect amount';
   interface Itype {
     amount: number;
@@ -14,7 +15,7 @@ const useRazorpayPayment = () => {
       description: description,
       image: 'https://i.imgur.com/3g7nmJC.png',
       currency: 'INR',
-      key: key,
+      key: state?.rPayKey,
       order_id: orderId,
       amount: amount * 100,
       name: 'Money saving',
