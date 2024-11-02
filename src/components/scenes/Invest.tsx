@@ -335,12 +335,12 @@ const Invest = ({navigation}: any) => {
               behavior={'height'}
               keyboardVerticalOffset={-800}
               style={{flex: 1, padding: 32}}>
-              {false && <SegmentedControlTab
+              {true && <SegmentedControlTab
                 activeTabStyle={{backgroundColor: theme.colors.primary}}
                 tabTextStyle={{color: theme.colors.primary}}
                 tabStyle={{borderColor: theme.colors.primary}}
                 tabsContainerStyle={{marginBottom: 20}}
-                values={['Recurring', 'One time']}
+                values={['Future savings', 'One time']}
                 selectedIndex={selectedTab}
                 onTabPress={i => {
                   setSelectedTab(i);

@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {View, TouchableOpacity, Text, StyleSheet, Platform} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Input from './Input';
-import {Pointer} from 'react-native-gifted-charts/src/Components/common/Pointer';
 
 const CustomDateTimePicker = ({onDateChange}) => {
   const [date, setDate] = useState(new Date());

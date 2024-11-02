@@ -40,8 +40,8 @@ const Mobile = () => {
     android: {
       provider: __DEV__ ? 'debug' : 'playIntegrity',
       debugToken:
-        // 'F77F86B4-7C50-4236-A8B3-AADB7057D892',
-        'EC002240-CB13-47FF-998B-AFC393BA70A1',
+        'D604FA1D-818A-4CD8-8E00-5CEF1FEB168F',
+        // 'EB881896-98EE-4C5C-80DC-E6AF90CB18A2',
     },
     apple: {
       provider: __DEV__ ? 'debug' : 'appAttestWithDeviceCheckFallback',

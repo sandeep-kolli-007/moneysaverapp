@@ -11,6 +11,7 @@ const Button = ({
   onPress,
   small,
   disabled,
+  backgroundColor
 }: any) => {
   const {theme} = useTheme();
   return (
@@ -31,7 +32,7 @@ const Button = ({
       }}
       buttonStyle={{
         ...style,
-        backgroundColor: theme.colors.primary,
+        backgroundColor: backgroundColor??theme.colors.primary,
         borderColor: 'transparent',
         borderWidth: 0,
         borderRadius: 30,

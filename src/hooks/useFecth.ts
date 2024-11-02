@@ -20,7 +20,7 @@ export default function useFetch(props: Iprops) {
   const [loading, setLoading] = useState(false);
   const [Refresh, setRefresh] = useState([]);
   // const baseUrl = 'http://10.0.2.2:7268/api';
-  // const baseUrl = 'https://b175-2406-b400-b4-bf67-6089-994d-64c9-372c.ngrok-free.app/'
+  // const baseUrl = 'https://23ab-2406-b400-b4-3e5f-28df-3397-91c9-28a9.ngrok-free.app/'
   const fetch = () => {
     setLoading(true);
     console.log(data,'fet')

@@ -11,12 +11,13 @@ import Kyc from '../components/scenes/Kyc';
 import GetStarted from '../components/scenes/GetStarted';
 import Notifications from '../components/scenes/Notifications';
 import Investments from '../components/scenes/Investments';
+import Login from '../components/scenes/Login';
 // import Payment from '../components/Payment';
 const Stack = createNativeStackNavigator();
 
 const Routes = () => {
   return (
-    <Stack.Navigator initialRouteName="mobile">
+    <Stack.Navigator initialRouteName="login">
       <Stack.Screen
         name="GetStarted"
         component={GetStarted}
@@ -40,6 +41,11 @@ const Routes = () => {
       <Stack.Screen
         name="investments"
         component={Investments}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="login"
+        component={Login}
         options={{headerShown: false}}
       />
       <Stack.Screen name="kyc" component={Kyc} options={{headerShown: false}} />

@@ -17,7 +17,7 @@ const Input = ({
   disabled,
   textAlign,
   inputContainerStyle,
-  onFocus,readOnly,onClick
+  onFocus,readOnly,onClick,secureTextEntry
 }: any) => {
   const {theme} = useTheme();
   return (
@@ -67,6 +67,7 @@ const Input = ({
       onFocus={onFocus}
       readOnly={readOnly}
       onPress={onClick}
+      secureTextEntry={secureTextEntry}
     />
   );
 };
