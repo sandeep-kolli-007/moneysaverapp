@@ -81,11 +81,12 @@ function Login() {
   };
 
   useEffect(() => {
-    if (res?.id === 0) {
+    console.log(res, 'singn');
+    // {"id": 0, "message": "UserDetails saved successFully", "success": true}
+    if (res?.success) {
       setIsLogin(true);
-    } else if (res) {
-      Alert.alert('something wrong');
     }
+    if (res?.message) Alert.alert(res?.message);
   }, [res]);
   useEffect(() => {
     setLoginData(defaultLogin);
@@ -93,17 +94,24 @@ function Login() {
   }, [isLogin, state?.phoneNumber]);
 
   useEffect(() => {
-    console.log(response, 'temppp');
-    if (response) {
-      if (response?.phone && response?.phone?.length == 10) {
-        //   dispatch({
-        //     type: 'update',
-        //     payload: response?.phone,
-        //     key: 'phoneNumber',
-        //   });
-        onFire();
-        ToastAndroid.show('Login Success', ToastAndroid.SHORT);
-      } else {
+    // {"creationResult": {"id": 0, "message": null, "success": false}, "userDetails": null}
+    // {"creationResult": {"id": 0, "message": null, "success": true}, "userDetails": {"name": "sndp", "password": null, "phone": "9999999999"}}
+    if (response?.creationResult) {
+      if (response?.creationResult?.success) {
+        if (
+          response?.userDetails?.phone &&
+          response?.userDetails?.phone?.length == 10
+        ) {
+          //   dispatch({
+          //     type: 'update',
+          //     payload: response?.phone,
+          //     key: 'phoneNumber',
+          //   });
+          onFire();
+          ToastAndroid.show('Login Success', ToastAndroid.SHORT);
+        }
+      }
+      if (!response?.creationResult?.success) {
         Alert.alert('Incorrect Credentials');
       }
     }
@@ -137,7 +145,7 @@ function Login() {
         ) : (
           <>
             <View style={{flex: 1}}>
-              <KeyboardAvoidingView style={{flex: 1}}  >
+              <KeyboardAvoidingView style={{flex: 1}}>
                 <ScrollView>
                   <Spinner
                     visible={loading || load || load1}
